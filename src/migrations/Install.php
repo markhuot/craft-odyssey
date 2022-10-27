@@ -38,7 +38,7 @@ class Install extends Migration
             'uid' => $this->uid(),
         ]);
 
-        $this->createIndex(null, Table::HOLDING, ['elementId', 'attribute', 'fieldId'], true);
+        //$this->createIndex(null, Table::HOLDING, ['elementId', 'attribute', 'fieldId'], true);
 
         // $this->createIndex(null, Table::BACKENDS, ['uid'], true);
         // $this->addForeignKey(null, Table::BACKENDS, ['parentId'], \craft\db\Table::ELEMENTS, ['id'], 'CASCADE', null);

@@ -17,6 +17,16 @@ class ActiveRecord extends \craft\db\ActiveRecord
         $model->setIsNewRecord(!$record);
         return $model;
     }
+    
+    static function make(array $record)
+    {
+        $type = static::$polymorphicKey ? ($record[static::$polymorphicKey] ?? static::class) : static::class;
+    
+        $model = new $type;
+        $model->setAttributes($record, false);
+        $model->setIsNewRecord(false);
+        return $model;
+    }
 
     function __get($key)
     {

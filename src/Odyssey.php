@@ -4,6 +4,7 @@ namespace markhuot\odyssey;
 
 use craft\base\Model;
 use craft\base\Plugin;
+use craft\db\Query;
 use craft\elements\db\ElementQuery;
 use craft\events\CancelableEvent;
 use craft\events\DefineBehaviorsEvent;
@@ -13,22 +14,31 @@ use craft\helpers\Db;
 use craft\services\Search;
 use craft\web\Application;
 use craft\web\UrlManager;
-use markhuot\craftdata\behaviors\DataRequestBehavior;
 use markhuot\odyssey\behaviors\ElementQueryBehavior;
 use markhuot\odyssey\behaviors\GetFormDataBehavior;
 use markhuot\odyssey\db\Table;
 use markhuot\odyssey\models\Backend;
 use markhuot\odyssey\models\Settings;
-use markhuot\craftdata\Data;
+use markhuot\odyssey\services\Backends;
+use markhuot\odyssey\services\Holding;
 use markhuot\odyssey\twig\Extension;
 use yii\base\Event;
 
+/**
+ * @property Holding $holding
+ * @property Backends $backends
+ */
 class Odyssey extends Plugin
 {
     public bool $hasCpSettings = true;
 
     function init()
     {
+        $this->components = [
+            'holding' => Holding::class,
+            'backends' => Backends::class,
+        ];
+
         Event::on(
             Application::class,
             Application::EVENT_BEFORE_REQUEST,
@@ -49,17 +59,7 @@ class Odyssey extends Plugin
             Search::class,
             Search::EVENT_BEFORE_INDEX_KEYWORDS,
             function (IndexKeywordsEvent $event) {
-                $data = [
-                    'keywords' => $event->keywords,
-                    'dateUpdated' => Db::prepareDateForDb(new \DateTime('now', new \DateTimeZone('UTC'))),
-                ];
-
-                \Craft::$app->db->createCommand()->upsert(Table::HOLDING, array_merge($data, [
-                    'elementId' => $event->element->id,
-                    'attribute' => $event->attribute,
-                    'fieldId' => $event->fieldId,
-                    'dateCreated' => Db::prepareDateForDb(new \DateTime('now', new \DateTimeZone('UTC'))),
-                ], $data))->execute();
+                $this->holding->store($event);
             }
         );
 

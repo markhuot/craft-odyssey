@@ -7,7 +7,7 @@ use markhuot\odyssey\validators\Json;
 
 class Algolia extends Backend
 {
-    public function rules(): array
+    function rules(): array
     {
         return array_merge(parent::rules(), [
             [['settings'], Json::class, 'rules' => [
@@ -16,10 +16,15 @@ class Algolia extends Backend
         ]);
     }
 
-    public function settingsHtml()
+    function settingsHtml()
     {
         return \Craft::$app->view->renderTemplate('odyssey/_backends/_algolia.twig', [
             'backend' => $this,
         ]);
+    }
+
+    function sync()
+    {
+
     }
 }

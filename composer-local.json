@@ -14,9 +14,16 @@
       "replace": false,
       "ignore-duplicates": true,
       "merge-dev": true,
-      "merge-extra": false,
-      "merge-extra-deep": false,
+      "merge-extra": true,
+      "merge-extra-deep": true,
       "merge-scripts": false
+    }
+  },
+  "config": {
+    "allow-plugins": {
+      "yiisoft/yii2-composer": true,
+      "craftcms/plugin-installer": true,
+      "wikimedia/composer-merge-plugin": true
     }
   }
 }

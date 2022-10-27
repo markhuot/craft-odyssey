@@ -20,5 +20,12 @@
     },
     "require": {
         "craftcms/cms": "^4.3"
+    },
+    "config": {
+        "allow-plugins": {
+            "yiisoft/yii2-composer": true,
+            "craftcms/plugin-installer": true,
+            "wikimedia/composer-merge-plugin": true
+        }
     }
 }

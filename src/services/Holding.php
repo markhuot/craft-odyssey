@@ -4,19 +4,16 @@ namespace markhuot\odyssey\services;
 
 use craft\db\Query;
 use craft\events\IndexKeywordsEvent;
-use craft\helpers\Db;
 use markhuot\odyssey\db\Table;
+use markhuot\odyssey\helpers\Date;
 use markhuot\odyssey\Odyssey;
+use yii\log\Logger;
+use function markhuot\odyssey\helpers\log;
 
 class Holding
 {
     function store(IndexKeywordsEvent $event)
     {
-        $data = [
-            'keywords' => $event->keywords,
-            'dateUpdated' => Db::prepareDateForDb(new \DateTime('now', new \DateTimeZone('UTC'))),
-        ];
-
         $transaction = \Craft::$app->db->beginTransaction();
         
         $query = [
@@ -35,7 +32,7 @@ class Holding
         if ($id) {
             \Craft::$app->db->createCommand()->update(Table::HOLDING, [
                 'keywords' => $event->keywords,
-                'dateUpdated' => Db::prepareDateForDb(new \DateTime('now', new \DateTimeZone('UTC'))),
+                'dateUpdated' => Date::nowPreparedForDb(),
             ], [
                 'id' => $id,
             ])->execute();
@@ -43,8 +40,8 @@ class Holding
         else {
             \Craft::$app->db->createCommand()->insert(Table::HOLDING, array_merge($query, [
                 'keywords' => $event->keywords,
-                'dateCreated' => Db::prepareDateForDb(new \DateTime('now', new \DateTimeZone('UTC'))),
-                'dateUpdated' => Db::prepareDateForDb(new \DateTime('now', new \DateTimeZone('UTC'))),
+                'dateCreated' => Date::nowPreparedForDb(),
+                'dateUpdated' => Date::nowPreparedForDb(),
             ]))->execute();
         }
         
@@ -53,16 +50,37 @@ class Holding
 
     function sync($batchSize = 100)
     {
+        log('Starting batch sync');
+
         $batch = (new Query)
             ->from(Table::HOLDING)
-            ->whereNull('dateSynced')
+            ->where(['dateSynced' => null])
             ->limit($batchSize)
-            ->all();
+            ->collect();
+
+        if ($batch->isEmpty()) {
+            log('Batch was empty, bailing');
+            return;
+        }
+
+        log("Limited to {$batchSize}, found {$batch->count()} records");
 
         $backends = Odyssey::getInstance()->backends->getAllBackends();
+        log('Syncing to '.count($backends).' backends, '.$backends->pluck('name')->join(', '));
 
-        foreach ($backends as $backend) {
-            $backend->sync($batch);
-        }
+        $backends->each->sync($batch);
+
+        log('Sync complete across all backends');
+        log('Updating local state');
+
+        $ids = $batch->pluck('id');
+        $rows = \Craft::$app->db->createCommand()->update(Table::HOLDING, [
+            'dateSynced' => Date::nowPreparedForDb(),
+        ], [
+            'id' => $ids,
+        ])->execute();
+
+        log('Local state updated '.$rows.' rows');
+        log('Sync batch complete');
     }
 }

@@ -20,6 +20,7 @@ use markhuot\odyssey\db\Table;
 use markhuot\odyssey\models\Backend;
 use markhuot\odyssey\models\Settings;
 use markhuot\odyssey\services\Backends;
+use markhuot\odyssey\services\Elements;
 use markhuot\odyssey\services\Holding;
 use markhuot\odyssey\twig\Extension;
 use yii\base\Event;
@@ -27,6 +28,7 @@ use yii\base\Event;
 /**
  * @property Holding $holding
  * @property Backends $backends
+ * @property Elements $elements
  */
 class Odyssey extends Plugin
 {
@@ -34,9 +36,15 @@ class Odyssey extends Plugin
 
     function init()
     {
+        $this->controllerNamespace = 'markhuot\\odyssey\\controllers';
+        if (\Craft::$app->request->isConsoleRequest) {
+            $this->controllerNamespace = 'markhuot\\odyssey\\console';
+        }
+
         $this->components = [
             'holding' => Holding::class,
             'backends' => Backends::class,
+            'elements' => Elements::class,
         ];
 
         Event::on(
@@ -88,6 +96,12 @@ class Odyssey extends Plugin
                 if (!$search) {
                     return;
                 }
+
+                $backend = Odyssey::getInstance()->backends->getAllBackends()->first();
+                $backend->search(
+                    query: $event->sender,
+                    keywords: $search,
+                );
             }
         );
 

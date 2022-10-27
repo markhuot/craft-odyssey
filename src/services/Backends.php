@@ -3,12 +3,16 @@
 namespace markhuot\odyssey\services;
 
 use markhuot\odyssey\models\Backend;
+use Illuminate\Support\Collection;
 
 class Backends
 {
-    /** @var null|Backend[] */
-    protected ?array $backends = null;
+    /** @var Collection<int, Backend>|null */
+    protected $backends = null;
 
+    /**
+     * @return Collection<int, Backend>
+     */
     function getAllBackends()
     {
         if ($this->backends !== null) {
@@ -17,8 +21,8 @@ class Backends
 
         $records = Backend::find()->asArray()->all();
 
-        return $this->backends = array_map(function($record) {
+        return $this->backends = collect(array_map(function($record) {
             return Backend::make($record);
-        }, $records);
+        }, $records));
     }
 }

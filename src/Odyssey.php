@@ -75,10 +75,6 @@ class Odyssey extends Plugin
             ElementQuery::class,
             ElementQuery::EVENT_BEFORE_PREPARE,
             function (CancelableEvent $event) {
-                if (!$event->sender->getBehavior('odyssey')) {
-                    return;
-                }
-
                 $event->sender->setOdysseySearch($event->sender->search);
                 $event->sender->search = null;
             }
@@ -88,10 +84,6 @@ class Odyssey extends Plugin
             ElementQuery::class,
             ElementQuery::EVENT_AFTER_PREPARE,
             function (CancelableEvent $event) {
-                if (!$event->sender->getBehavior('odyssey')) {
-                    return;
-                }
-
                 $search = $event->sender->getOdysseySearch();
                 if (!$search) {
                     return;

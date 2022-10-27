@@ -57,13 +57,14 @@ class Algolia extends Backend
 
                 return [
                     'objectID' => $objectID,
-                    'elementId' => $record['elementId'],
+                    'elementId' => (int)$record['elementId'],
                     'elementType' => get_class($record['element']),
                     'draftId' => $record['element']->draftId,
                     'revisionId' => $record['element']->revisionId,
                     'dateDeleted' => $record['element']->dateDeleted,
                     'enabled' => $record['element']->enabled,
                     'archived' => $record['element']->archived,
+                    'authorId' => $record['element']->author?->id,
                     'attribute' => $record['attribute'],
                     'fieldId' => $record['fieldId'],
                     'keywords' => $record['keywords'],

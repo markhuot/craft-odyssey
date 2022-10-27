@@ -11,16 +11,15 @@ class Elements
 {
     function hydrateElements(Collection $collection, string $key='elementId')
     {
-        $mapping = (new Query)
+        $elementTypeMapping = (new Query)
             ->select(['id', 'type'])
             ->from(Table::ELEMENTS)
             ->where(['id' => $collection->pluck($key)->toArray()])
             ->collect();
 
-        $hydrated = $mapping
+        $hydrated = $elementTypeMapping
             ->groupBy('type')
             ->map(function ($ids, $type) {
-                /** @var Entry $type */
                 return $type::find()
                     ->status(null)
                     ->id($ids->pluck('id')->unique()->toArray())
@@ -28,8 +27,9 @@ class Elements
             })
             ->flatten();
 
-        $collection = $collection->map(function ($item) use ($hydrated) {
-            $item['element'] = $hydrated->where('id', '=', $item['elementId'])->first();
+        $collection = $collection->map(function ($item) use ($key, $hydrated) {
+            $item['element'] = $hydrated->where('id', '=', $item[$key])->first();
+            
             return $item;
         });
 

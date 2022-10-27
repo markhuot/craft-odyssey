@@ -10,12 +10,8 @@ class ActiveRecord extends \craft\db\ActiveRecord
     public static function firstOrNew($condition)
     {
         $record = static::find()->where(['id' => $condition])->asArray()->one();
-        $type = static::$polymorphicKey ? ($record[static::$polymorphicKey] ?? static::class) : static::class;
 
-        $model = new $type;
-        $model->setAttributes($record, false);
-        $model->setIsNewRecord(!$record);
-        return $model;
+        return static::make($record);
     }
     
     static function make(array $record)

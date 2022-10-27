@@ -1,0 +1,16 @@
+{% import '_includes/forms.twig' as forms %}
+
+{{ forms.lightswitch({
+    first: true,
+    label: 'Sync',
+    name: 'sync',
+    value: settings.sync
+}) }}
+
+<h2>Backends</h2>
+<ul>
+    {% for backend in backends %}
+        <li><a href="{{ cpUrl('odyssey/backend/' ~ backend.id) }}">{{ backend.name }}</a></li>
+    {% endfor %}
+</ul>
+<p><a data-icon="plus" href="{{ cpUrl('odyssey/backend/create') }}"> Add backend</a></p>

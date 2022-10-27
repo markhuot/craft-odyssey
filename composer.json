@@ -1,0 +1,24 @@
+{
+    "name": "markhuot/craft-odyssey",
+    "type": "craft-plugin",
+    "license": "GPL-3.0-or-later",
+    "authors": [
+        {
+            "name": "Mark Huot",
+            "email": "mark@markhuot.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "markhuot\\odyssey\\": "src/"
+        }
+    },
+    "extra": {
+        "name": "Odyssey",
+        "handle": "odyssey",
+        "class": "markhuot\\odyssey\\Odyssey"
+    },
+    "require": {
+        "craftcms/cms": "^4.3"
+    }
+}

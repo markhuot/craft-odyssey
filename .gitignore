@@ -1,0 +1,9 @@
+.idea
+vendor
+/storage
+/craft
+/web
+/.env
+/bootstrap.php
+/composer*.lock
+/config

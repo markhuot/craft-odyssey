@@ -1,0 +1,45 @@
+{% import '_includes/forms.twig' as forms %}
+
+{{ forms.hidden({
+    name: 'id',
+    value: backend.id|default()
+}) }}
+
+{{ forms.textField({
+    first: true,
+    id: 'name',
+    label: 'Name',
+    name: 'name',
+    value: old('name', backend),
+    errors: [craft.app.session.getFlash('error.name')]|filter,
+}) }}
+
+{{ forms.textField({
+    first: true,
+    id: 'handle',
+    label: 'Handle',
+    name: 'handle',
+    value: old('handle', backend),
+    errors: [craft.app.session.getFlash('error.handle')]|filter,
+}) }}
+
+<hr>
+
+{{ forms.selectField({
+    label: 'Type',
+    name: 'type',
+    value: backend.type|default(''),
+    options: {
+        '\\markhuot\\odyssey\\backends\\Algolia': "Algolia",
+        '\\markhuot\\odyssey\\backends\\Solr': "Solr",
+        '\\markhuot\\odyssey\\backends\\Elasticsearch': "Elasticsearch",
+    }
+}) }}
+
+{% if backend.type %}
+    {{ backend.settingsHtml()|raw }}
+{% endif %}
+
+{% js %}
+    {% if not backend.id %}new Craft.HandleGenerator('#name', '#handle');{% endif %}
+{% endjs %}

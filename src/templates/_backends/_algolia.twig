@@ -1,0 +1,28 @@
+{% import '_includes/forms.twig' as forms %}
+
+{{ forms.autosuggestField({
+    first: true,
+    label: 'Application ID',
+    name: 'settings[applicationId]',
+    suggestEnvVars: true,
+    value: old('settings.applicationId', backend),
+    errors: [craft.app.session.getFlash('error.settings.applicationId')]|filter,
+}) }}
+
+{{ forms.autosuggestField({
+    first: true,
+    label: 'Search API Key',
+    name: 'settings[searchApiKey]',
+    suggestEnvVars: true,
+    value: old('settings.searchApiKey', backend),
+    errors: [craft.app.session.getFlash('error.settings.searchApiKey')]|filter,
+}) }}
+
+{{ forms.autosuggestField({
+    first: true,
+    label: 'Admin API Key',
+    name: 'settings[adminApiKey]',
+    suggestEnvVars: true,
+    value: old('settings.adminApiKey', backend),
+    errors: [craft.app.session.getFlash('error.settings.adminApiKey')]|filter,
+}) }}
